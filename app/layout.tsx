@@ -13,9 +13,9 @@ export const metadata: Metadata = {
   title: "Basit Adebisi | Portfolio",
   description: "My personal portfolio showcasing my projects and skills.",
   icons: {
-    icon: "/favicon.png",
-    shortcut: "/favicon.png",
-    apple: "/favicon.png",
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/apple-touch-icon.png",
   },
   manifest: "/manifest.json",
 };

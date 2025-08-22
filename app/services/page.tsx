@@ -8,19 +8,19 @@ const services = [
     number: "01",
     title: " Web Development",
     description: "Building responsive and modern websites.",
-    link: "/services/web-development",
+    link: "/contact",
   },
   {
     number: "02",
     title: " App Development",
     description: "Creating user-friendly interfaces and experiences.",
-    link: "/services/app-development",
+    link: "/contact",
   },
   {
     number: "03",
     title: "SEO Optimization",
     description: "Improving website visibility on search engines.",
-    link: "/services/seo-optimization",
+    link: "/contact",
   },
 ];
 
