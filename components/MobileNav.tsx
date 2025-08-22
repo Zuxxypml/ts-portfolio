@@ -15,7 +15,7 @@ const navLinks = [
 import { cn } from "@/lib/utils";
 import { Button } from "./ui/button";
 
-function MenuIcon(props: any) {
+function MenuIcon(props: React.ComponentPropsWithoutRef<typeof CiMenuFries>) {
   return <CiMenuFries {...props} />;
 }
 
