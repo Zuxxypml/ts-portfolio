@@ -243,17 +243,19 @@ export default function Contact() {
             </form>
           </div>
           {/* Info  */}
-          <div className="flex-1 flex items-center xl:justify-end order-1 xl:order-none mb-8 xl:mb-0 ">
+          <div className="min-h-auto flex-1 flex items-center xl:justify-end order-1 xl:order-none mb-8 xl:mb-0 text-wrap">
             <ul className="flex flex-col gap-10">
               {infoData.map((info, index) => {
                 return (
                   <li key={index} className="flex items-center gap-6">
-                    <div className="w-[52px] h-[52px] xl:w-[72px] xl:h-[72px] bg-[#27272c] text-accent flex items-center justify-center rounded-md">
+                    <div className="w-[52px] h-[82px] xl:w-[72px] xl:h-[72px] bg-[#27272c] text-accent flex items-center justify-center rounded-md">
                       <div className="text-[28px]">{info.icon}</div>
                     </div>
-                    <div className="flex-1">
+                    <div className="flex-1 flex flex-col flex-wrap text-wrap">
                       <p className="text-white/60">{info.title}</p>
-                      <h3 className="text-xl">{info.description}</h3>
+                      <h3 className="text-base sm:text-xl break-all break-words">
+                        {info.description}
+                      </h3>
                     </div>
                   </li>
                 );
