@@ -59,7 +59,7 @@ export default function MobileNav() {
         </nav>
         <div className="flex flex-col gap-2 mt-8">
           <a
-            href="/Basit_Adebisi_CV.pdf"
+            href="/assets/cv/basit.pdf"
             download
             className="text-sm underline underline-offset-4 hover:text-zinc-900 dark:hover:text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-black dark:focus-visible:ring-white rounded"
           >
