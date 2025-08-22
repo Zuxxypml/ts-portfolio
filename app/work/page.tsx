@@ -11,6 +11,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { BsArrowUpRight, BsGithub } from "react-icons/bs";
+import type { Swiper as SwiperClass } from "swiper";
 import "swiper/css";
 import { Swiper, SwiperSlide } from "swiper/react";
 
@@ -159,7 +160,7 @@ export default function Work() {
     React.Dispatch<React.SetStateAction<projectsType>>
   ] = useState(projects[0]);
 
-  const handleSlideChange: (swiper: any) => void = (swiper) => {
+  const handleSlideChange = (swiper: SwiperClass) => {
     // get current slide index
     const currentIndex = swiper.activeIndex;
     // update project data based on current slide index
