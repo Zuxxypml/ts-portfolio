@@ -1,7 +1,10 @@
 "use client";
+
+import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CiMenuFries } from "react-icons/ci";
+import { Button } from "./ui/button";
 import { Sheet, SheetClose, SheetContent, SheetTrigger } from "./ui/sheet";
 
 const navLinks = [
@@ -12,26 +15,20 @@ const navLinks = [
   { href: "/contact", label: "Contact" },
 ];
 
-import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
-
-function MenuIcon(props: React.ComponentPropsWithoutRef<typeof CiMenuFries>) {
-  return <CiMenuFries {...props} />;
-}
-
 export default function MobileNav() {
   const pathname = usePathname();
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button
-          variant="ghost"
+        {/* <Button
+          variant="default"
           size="icon"
           className="md:hidden"
           aria-label="Open navigation menu"
         >
           <MenuIcon className="h-6 w-6" />
-        </Button>
+        </Button> */}
+        <CiMenuFries className="text-[32px] text-accent" />
       </SheetTrigger>
       <SheetContent
         side="left"
