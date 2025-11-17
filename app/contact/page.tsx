@@ -34,7 +34,7 @@ const infoData: info[] = [
   {
     icon: <FaMapMarkerAlt className="text-accent" />,
     title: "Address",
-    description: "Ibadan, Nigeria",
+    description: "Scarborough, ON",
   },
 ];
 

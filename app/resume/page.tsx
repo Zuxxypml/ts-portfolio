@@ -57,7 +57,7 @@ const aboutMe: {
   items: [
     {
       title: "Location",
-      details: "Ibadan, Nigeria",
+      details: "Scarborough, ON",
     },
     {
       title: "Email",
