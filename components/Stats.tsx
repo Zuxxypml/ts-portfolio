@@ -3,10 +3,10 @@ import CountUp from "react-countup";
 import React from "react";
 
 const statsData = [
-  { id: 1, value: "5", label: "Years of Experience" },
-  { id: 2, value: "27", label: "Projects Completed" },
-  { id: 3, value: "1000", label: "Commits Made" },
-  { id: 4, value: "30", label: "Technologies Mastered" },
+  { id: 1, value: "6", label: "Years of Experience" },
+  { id: 2, value: "50", label: "Projects Completed" },
+  { id: 3, value: "2500", label: "Commits Made" },
+  { id: 4, value: "35", label: "Technologies Mastered" },
 ];
 
 export default function Stats() {
