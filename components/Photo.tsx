@@ -14,7 +14,7 @@ export default function Photo() {
         className="relative w-full h-full"
       >
         <motion.div
-          className="w-[298px] h-[298px] xl:w-[498px] xl:h-[498px]"
+          className="w-[280px] h-[280px] sm:w-[350px] sm:h-[350px] xl:w-[498px] xl:h-[498px]"
           initial={{ opacity: 0 }}
           animate={{
             opacity: 1,
@@ -24,9 +24,10 @@ export default function Photo() {
           <Image
             src="/assets/photo.png"
             priority
-            quality={100}
+            quality={90}
             fill
-            alt="Description of the image"
+            sizes="(max-width: 640px) 280px, (max-width: 1024px) 350px, 498px"
+            alt="Basit Adebisi - Full Stack Developer"
             className="object-contain"
           />
         </motion.div>

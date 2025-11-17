@@ -20,16 +20,18 @@ export default function WorkSliderButtons({
 
   return (
     <div className={`${containerStyles}`}>
-      <button className={`${buttonStyles}`}>
+      <button className={`${buttonStyles}`} 
+          onClick={() => swiper.slidePrev()}
+      >
         <PiCaretLeftBold
           className={`${iconsStyles}`}
-          onClick={() => swiper.slidePrev()}
         />
       </button>
-      <button className={`${buttonStyles}`}>
+      <button className={`${buttonStyles}`}
+          onClick={() => swiper.slideNext()}
+      >
         <PiCaretRightBold
           className={`${iconsStyles}`}
-          onClick={() => swiper.slideNext()}
         />
       </button>
     </div>

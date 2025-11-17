@@ -44,6 +44,15 @@ const EMAILJS_SERVICE_ID = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!;
 const EMAILJS_TEMPLATE_ID = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!;
 const EMAILJS_USER_ID = process.env.NEXT_PUBLIC_EMAILJS_USER_ID!;
 
+type FormErrors = {
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  phone?: string;
+  service?: string;
+  message?: string;
+};
+
 export default function Contact() {
   const [form, setForm] = useState({
     firstname: "",
@@ -55,35 +64,81 @@ export default function Contact() {
   });
   const [status, setStatus] = useState<null | "success" | "error">(null);
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<FormErrors>({});
+
+  const validateField = (name: string, value: string): string | undefined => {
+    switch (name) {
+      case "firstname":
+        return value.trim().length < 2 ? "First name is required" : undefined;
+      case "lastname":
+        return value.trim().length < 2 ? "Last name is required" : undefined;
+      case "email":
+        return !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+          ? "Valid email is required"
+          : undefined;
+      case "phone":
+        return value && !/^\d{10,}/.test(value.replace(/\D/g, ""))
+          ? "Valid phone number required"
+          : undefined;
+      case "service":
+        return !value ? "Please select a service" : undefined;
+      case "message":
+        return value.trim().length < 10 ? "Message must be at least 10 characters" : undefined;
+      default:
+        return undefined;
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm({ ...form, [name]: value });
+    const error = validateField(name, value);
+    setErrors({ ...errors, [name]: error });
   };
 
   const handleServiceChange = (value: string) => {
     setForm({ ...form, service: value });
+    setErrors({ ...errors, service: undefined });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setStatus(null);
+
+    // Validate all fields
+    const newErrors: FormErrors = {};
+    Object.entries(form).forEach(([key, value]) => {
+      const error = validateField(key, value);
+      if (error) newErrors[key as keyof FormErrors] = error;
+    });
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setLoading(true);
     try {
-      await emailjs.send(
-        EMAILJS_SERVICE_ID,
-        EMAILJS_TEMPLATE_ID,
-        {
-          firstname: form.firstname,
-          lastname: form.lastname,
-          email: form.email,
-          phone: form.phone,
-          service: form.service,
-          message: form.message,
-        },
-        EMAILJS_USER_ID
-      );
+      const response = await Promise.race([
+        emailjs.send(
+          EMAILJS_SERVICE_ID,
+          EMAILJS_TEMPLATE_ID,
+          {
+            firstname: form.firstname,
+            lastname: form.lastname,
+            email: form.email,
+            phone: form.phone,
+            service: form.service,
+            message: form.message,
+          },
+          EMAILJS_USER_ID
+        ),
+        new Promise((_, reject) =>
+          setTimeout(() => reject(new Error("Request timeout")), 10000)
+        ),
+      ]);
       setStatus("success");
       setForm({
         firstname: "",
@@ -93,8 +148,10 @@ export default function Contact() {
         service: "",
         message: "",
       });
-    } catch {
+      setErrors({});
+    } catch (err) {
       setStatus("error");
+      console.error("Email error:", err);
     } finally {
       setLoading(false);
     }
@@ -123,103 +180,169 @@ export default function Contact() {
               </p>
               {/* Input  */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <label className="sr-only" htmlFor="firstname">
-                  Firstname
-                </label>
-                <Input
-                  id="firstname"
-                  name="firstname"
-                  type="text"
-                  placeholder="Firstname"
-                  value={form.firstname}
-                  onChange={handleChange}
-                  required
-                  aria-label="Firstname"
-                  className="focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                />
-                <label className="sr-only" htmlFor="lastname">
-                  Lastname
-                </label>
-                <Input
-                  id="lastname"
-                  name="lastname"
-                  type="text"
-                  placeholder="Lastname"
-                  value={form.lastname}
-                  onChange={handleChange}
-                  required
-                  aria-label="Lastname"
-                  className="focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                />
-                <label className="sr-only" htmlFor="email">
-                  Email address
-                </label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder="Email address"
-                  value={form.email}
-                  onChange={handleChange}
-                  required
-                  aria-label="Email address"
-                  className="focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                />
-                <label className="sr-only" htmlFor="phone">
-                  Phone number
-                </label>
-                <Input
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  placeholder="Phone number"
-                  value={form.phone}
-                  onChange={handleChange}
-                  aria-label="Phone number"
-                  className="focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                />
+                <div>
+                  <label className="sr-only" htmlFor="firstname">
+                    Firstname
+                  </label>
+                  <Input
+                    id="firstname"
+                    name="firstname"
+                    type="text"
+                    placeholder="Firstname"
+                    value={form.firstname}
+                    onChange={handleChange}
+                    required
+                    aria-label="Firstname"
+                    aria-invalid={!!errors.firstname}
+                    aria-describedby={errors.firstname ? "firstname-error" : undefined}
+                    className={`focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                      errors.firstname ? "border-red-500" : ""
+                    }`}
+                  />
+                  {errors.firstname && (
+                    <p id="firstname-error" className="text-red-400 text-sm mt-1">
+                      {errors.firstname}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="sr-only" htmlFor="lastname">
+                    Lastname
+                  </label>
+                  <Input
+                    id="lastname"
+                    name="lastname"
+                    type="text"
+                    placeholder="Lastname"
+                    value={form.lastname}
+                    onChange={handleChange}
+                    required
+                    aria-label="Lastname"
+                    aria-invalid={!!errors.lastname}
+                    aria-describedby={errors.lastname ? "lastname-error" : undefined}
+                    className={`focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                      errors.lastname ? "border-red-500" : ""
+                    }`}
+                  />
+                  {errors.lastname && (
+                    <p id="lastname-error" className="text-red-400 text-sm mt-1">
+                      {errors.lastname}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="sr-only" htmlFor="email">
+                    Email address
+                  </label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder="Email address"
+                    value={form.email}
+                    onChange={handleChange}
+                    required
+                    aria-label="Email address"
+                    aria-invalid={!!errors.email}
+                    aria-describedby={errors.email ? "email-error" : undefined}
+                    className={`focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                      errors.email ? "border-red-500" : ""
+                    }`}
+                  />
+                  {errors.email && (
+                    <p id="email-error" className="text-red-400 text-sm mt-1">
+                      {errors.email}
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <label className="sr-only" htmlFor="phone">
+                    Phone number
+                  </label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder="Phone number"
+                    value={form.phone}
+                    onChange={handleChange}
+                    aria-label="Phone number"
+                    aria-invalid={!!errors.phone}
+                    aria-describedby={errors.phone ? "phone-error" : undefined}
+                    className={`focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                      errors.phone ? "border-red-500" : ""
+                    }`}
+                  />
+                  {errors.phone && (
+                    <p id="phone-error" className="text-red-400 text-sm mt-1">
+                      {errors.phone}
+                    </p>
+                  )}
+                </div>
               </div>
               {/* Select  */}
-              <label className="sr-only" htmlFor="service">
-                Service
-              </label>
-              <Select value={form.service} onValueChange={handleServiceChange}>
-                <SelectTrigger
-                  className="w-full focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                  id="service"
-                  aria-label="Service"
-                >
-                  <SelectValue placeholder="Select a service" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Select a Service</SelectLabel>
-                    <SelectItem value="webDevelopment">
-                      Web Development
-                    </SelectItem>
-                    <SelectItem value="appDevelopment">
-                      App Development
-                    </SelectItem>
-                    <SelectItem value="seoOptimization">
-                      SEO Optimization
-                    </SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <div>
+                <label className="sr-only" htmlFor="service">
+                  Service
+                </label>
+                <Select value={form.service} onValueChange={handleServiceChange}>
+                  <SelectTrigger
+                    className={`w-full focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                      errors.service ? "border-red-500" : ""
+                    }`}
+                    id="service"
+                    aria-label="Service"
+                    aria-invalid={!!errors.service}
+                    aria-describedby={errors.service ? "service-error" : undefined}
+                  >
+                    <SelectValue placeholder="Select a service" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectLabel>Select a Service</SelectLabel>
+                      <SelectItem value="webDevelopment">
+                        Web Development
+                      </SelectItem>
+                      <SelectItem value="appDevelopment">
+                        App Development
+                      </SelectItem>
+                      <SelectItem value="seoOptimization">
+                        SEO Optimization
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+                {errors.service && (
+                  <p id="service-error" className="text-red-400 text-sm mt-1">
+                    {errors.service}
+                  </p>
+                )}
+              </div>
               {/* Text  */}
-              <label className="sr-only" htmlFor="message">
-                Message
-              </label>
-              <Textarea
-                id="message"
-                name="message"
-                className="h-[200px] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2"
-                placeholder="Message..."
-                value={form.message}
-                onChange={handleChange}
-                required
-                aria-label="Message"
-              />
+              <div>
+                <label className="sr-only" htmlFor="message">
+                  Message
+                </label>
+                <Textarea
+                  id="message"
+                  name="message"
+                  className={`h-[200px] focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 ${
+                    errors.message ? "border-red-500" : ""
+                  }`}
+                  placeholder="Message..."
+                  value={form.message}
+                  onChange={handleChange}
+                  required
+                  aria-label="Message"
+                  aria-invalid={!!errors.message}
+                  aria-describedby={errors.message ? "message-error" : undefined}
+                />
+                {errors.message && (
+                  <p id="message-error" className="text-red-400 text-sm mt-1">
+                    {errors.message}
+                  </p>
+                )}
+              </div>
               {/* Button  */}
               <Button
                 size={`md`}

@@ -16,9 +16,11 @@
     @apply text-[20px] xl:text-[24px] font-semibold leading-[1.1];
   }
   .text-outline {
-    -webkit-text-stroke: 1px #ffffff;
+    -webkit-text-stroke: 1.5px #ffffff;
+    color: rgba(0, 0, 0, 0.1);
   }
   .text-outline-hover {
-    -webkit-text-stroke: 1px #ffffff;
+    -webkit-text-stroke: 1.5px #ffffff;
+    color: rgba(255, 255, 255, 0.2);
   }
 }
