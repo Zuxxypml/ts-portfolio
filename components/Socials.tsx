@@ -11,7 +11,7 @@ const socials = [
   },
   {
     icon: <FaLinkedin />,
-    link: "http://linkedin.com/in/basit-adebisi-a7190537b",
+    link: "http://linkedin.com/in/basit-adebisi-2a6a67413",
   },
   {
     icon: <FaTwitter />,
